@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Masalar - {{ restaurant.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-table text-primary me-2"></i> {{ restaurant.name }} - Masalar</h1>
+        <span class="badge bg-info rounded-pill fs-6">{{ tables|length }} masa</span>
+    </div>
+
+    <div class="row g-4">
+        {% for table in tables %}
+        <div class="col-md-6 col-lg-4 col-xl-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-header d-flex justify-content-between align-items-center bg-white py-3">
+                    <h5 class="mb-0"><i class="fas fa-table text-primary me-2"></i> Masa {{ table.number }}</h5>
+                    <span class="badge bg-{% if table.is_active %}success{% else %}secondary{% endif %} rounded-pill">
+                        {% if table.is_active %}Aktiv{% else %}Deaktiv{% endif %}
+                    </span>
+                </div>
+                <div class="card-body text-center">
+                    {% if table.qr_code_path %}
+                    <div class="qr-code-container mb-3 p-3 bg-light rounded">
+                        <img src="{{ url_for('static', filename=table.qr_code_path) }}" alt="QR Kod - Masa {{ table.number }}" class="img-fluid" style="max-width: 100%;">
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        <small class="text-muted">Masa linki:</small><br>
+                        <code class="user-select-all bg-light p-2 rounded d-block">{{ url_for('main.table_entry', table_id=table.id, _external=True)|truncate(30, True) }}</code>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('static', filename=table.qr_code_path) }}" download="masa_{{ table.number }}_qr.png" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-download me-1"></i> QR kodu endir
+                        </a>
+                        <button type="button" class="btn btn-outline-info btn-sm" onclick="copyToClipboard('{{ url_for('main.table_entry', table_id=table.id, _external=True) }}')">
+                            <i class="fas fa-link me-1"></i> Linki kopyala
+                        </button>
+                    </div>
+                </div>
+                <div class="card-footer bg-white">
+                    <small class="text-muted">
+                        <i class="far fa-calendar me-1"></i> Yaradılma: {{ table.created_at.strftime('%d.%m.%Y') }}
+                    </small>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if not tables %}
+    <div class="text-center py-5">
+        <div class="empty-state">
+            <i class="fas fa-table fa-4x text-muted mb-3"></i>
+            <h3 class="h5">Masa tapılmadı</h3>
+            <p class="text-muted">Bu restoran üçün masa yaradılmayıb</p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% block scripts %}
+<script>
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(function() {
+        showToast('Link panoya kopyalandı', 'success');
+    }).catch(function() {
+        showToast('Kopyalama xətası', 'error');
+    });
+}
+</script>
+{% endblock %}
+
+<style>
+    .qr-code-container {
+        background-color: white;
+        border: 1px solid #eee;
+    }
+    
+    .empty-state {
+        max-width: 400px;
+        margin: 0 auto;
+    }
+    
+    .card {
+        transition: transform 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+    }
+    
+    code {
+        word-break: break-all;
+    }
+</style>
+{% endblock %}

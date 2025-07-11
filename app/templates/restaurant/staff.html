@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Personal - {{ current_user.restaurant.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-users text-primary me-2"></i> Personal idarəsi</h1>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createStaffModal">
+            <i class="fas fa-plus me-1"></i> Yeni Ofisiant
+        </button>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0"><i class="fas fa-user-tie text-primary me-2"></i> Ofisiantlar</h5>
+        </div>
+        <div class="card-body">
+            {% if staff_members %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>İstifadəçi adı</th>
+                            <th>E-poçt</th>
+                            <th>Status</th>
+                            <th>Yaradılma tarixi</th>
+                            <th class="text-end">Əməliyyatlar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for staff in staff_members %}
+                        <tr>
+                            <td>{{ staff.username }}</td>
+                            <td>{{ staff.email }}</td>
+                            <td>
+                                <span class="badge bg-{% if staff.is_active %}success{% else %}secondary{% endif %} rounded-pill">
+                                    {% if staff.is_active %}Aktiv{% else %}Deaktiv{% endif %}
+                                </span>
+                            </td>
+                            <td>{{ staff.created_at.strftime('%d.%m.%Y') }}</td>
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-outline-primary" title="Düzəliş">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <div class="empty-state">
+                    <i class="fas fa-user-tie fa-4x text-muted mb-3"></i>
+                    <h3 class="h5">Ofisiant tapılmadı</h3>
+                    <p class="text-muted mb-4">Hələ heç bir ofisiant əlavə edilməyib</p>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createStaffModal">
+                        <i class="fas fa-plus me-1"></i> İlk ofisiantı əlavə et
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Create Staff Modal -->
+<div class="modal fade" id="createStaffModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-user-plus text-primary me-2"></i> Yeni Ofisiant</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('restaurant.create_staff') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">İstifadəçi adı *</label>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="email" class="form-label">E-poçt *</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Parol *</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                        <div class="form-text">Minimum 6 simvol</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i> Ləğv et
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i> Yarat
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .empty-state {
+        max-width: 400px;
+        margin: 0 auto;
+    }
+    
+    .modal-header {
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+    
+    .modal-footer {
+        border-top: 1px solid rgba(0,0,0,0.1);
+    }
+    
+    .table-hover tbody tr:hover {
+        background-color: rgba(0,0,0,0.02);
+    }
+</style>
+{% endblock %}

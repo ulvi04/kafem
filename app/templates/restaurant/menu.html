@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Menyu - {{ restaurant.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-utensils text-primary me-2"></i> Menyu - {{ restaurant.name }}</h1>
+        <a href="{{ url_for('restaurant.create_menu_item') }}" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i> Yeni Məhsul
+        </a>
+    </div>
+
+    {% if menu_items %}
+    <div class="row g-4">
+        {% for item in menu_items %}
+        <div class="col-md-6 col-lg-4 col-xl-3">
+            <div class="card h-100 shadow-sm">
+                {% if item.image %}
+                <img src="{{ url_for('static', filename=item.image) }}" class="card-img-top" style="height: 200px; object-fit: cover;" alt="{{ item.name }}">
+                {% else %}
+                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                    <i class="fas fa-utensils fa-3x text-muted"></i>
+                </div>
+                {% endif %}
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title mb-0">{{ item.name }}</h5>
+                        <span class="badge bg-{{ 'success' if item.is_available else 'secondary' }} rounded-pill">
+                            {% if item.is_available %}Mövcud{% else %}Bitib{% endif %}
+                        </span>
+                    </div>
+                    <p class="card-text text-muted">{{ item.description|truncate(100) }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <strong class="text-primary">{{ "%.2f"|format(item.price) }} ₼</strong>
+                        {% if item.category %}
+                        <small class="text-muted">{{ item.category }}</small>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-footer bg-white">
+                    <div class="btn-group w-100" role="group">
+                        <a href="{{ url_for('restaurant.edit_menu_item', item_id=item.id) }}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-edit me-1"></i> Düzəliş
+                        </a>
+                        <form method="POST" action="{{ url_for('restaurant.delete_menu_item', item_id=item.id) }}" class="d-inline">
+                            <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Bu məhsulu silmək istədiyinizdən əminsiniz?')">
+                                <i class="fas fa-trash me-1"></i> Sil
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <div class="empty-state">
+            <i class="fas fa-utensils fa-4x text-muted mb-3"></i>
+            <h3 class="h5">Menyu boşdur</h3>
+            <p class="text-muted mb-4">İlk məhsulunuzu əlavə edin</p>
+            <a href="{{ url_for('restaurant.create_menu_item') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i> Məhsul əlavə et
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .card {
+        transition: all 0.3s ease;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .empty-state {
+        max-width: 400px;
+        margin: 0 auto;
+    }
+    
+    .btn-group .btn {
+        border-radius: 0;
+    }
+    
+    .btn-group .btn:first-child {
+        border-top-left-radius: 8px;
+        border-bottom-left-radius: 8px;
+    }
+    
+    .btn-group .btn:last-child {
+        border-top-right-radius: 8px;
+        border-bottom-right-radius: 8px;
+    }
+</style>
+{% endblock %}

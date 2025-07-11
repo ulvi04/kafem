@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card border-0 shadow-sm" style="border-radius: 12px; overflow: hidden;">
+                <div class="card-body p-4 p-md-5 text-center">
+                    <div class="mb-4">
+                        <div class="icon-container mb-3" style="width: 80px; height: 80px; background: linear-gradient(135deg, #f8f9fa, #e9ecef); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                            <i class="fas fa-utensils fa-2x" style="color: #e74c3c;"></i>
+                        </div>
+                        <h1 class="card-title mb-2" style="font-size: 2rem; font-weight: 700; color: #2c3e50;">Kafem</h1>
+                        <p class="card-text text-muted" style="font-size: 1.1rem;">Restoran sipariş sistemi</p>
+                    </div>
+                    
+                    {% if not current_user.is_authenticated %}
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-primary px-4 py-2" style="border-radius: 8px; font-weight: 500; background-color: #e74c3c; border: none; transition: all 0.3s ease;">
+                        <i class="fas fa-sign-in-alt me-2"></i> Giriş
+                    </a>
+                    {% else %}
+                    <div class="d-grid gap-3 mx-auto" style="max-width: 300px;">
+                        {% if current_user.role == 'admin' %}
+                        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-primary px-4 py-2" style="border-radius: 8px; font-weight: 500; background-color: #e74c3c; border: none; transition: all 0.3s ease;">
+                            <i class="fas fa-tachometer-alt me-2"></i> Admin Panel
+                        </a>
+                        {% elif current_user.role == 'restoran_sahibi' %}
+                        <a href="{{ url_for('restaurant.dashboard') }}" class="btn btn-primary px-4 py-2" style="border-radius: 8px; font-weight: 500; background-color: #e74c3c; border: none; transition: all 0.3s ease;">
+                            <i class="fas fa-store me-2"></i> Restoran Panel
+                        </a>
+                        {% elif current_user.role == 'ofisiant' %}
+                        <a href="{{ url_for('waiter.dashboard') }}" class="btn btn-primary px-4 py-2" style="border-radius: 8px; font-weight: 500; background-color: #e74c3c; border: none; transition: all 0.3s ease;">
+                            <i class="fas fa-clipboard-list me-2"></i> Ofisiant Panel
+                        </a>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
+    }
+    
+    .icon-container {
+        transition: transform 0.3s ease;
+    }
+    
+    .icon-container:hover {
+        transform: rotate(15deg) scale(1.1);
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Restoranlar - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="fas fa-store"></i> Restoranlar</h1>
+        <a href="{{ url_for('admin.create_restaurant') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Yeni Restoran
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Logo</th>
+                                    <th>Ad</th>
+                                    <th>Ünvan</th>
+                                    <th>Telefon</th>
+                                    <th>Masa sayı</th>
+                                    <th>Status</th>
+                                    <th>Əməliyyatlar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for restaurant in restaurants %}
+                                <tr>
+                                    <td>
+                                        {% if restaurant.logo %}
+                                        <img src="{{ url_for('static', filename=restaurant.logo) }}" alt="{{ restaurant.name }}" class="rounded" style="width: 40px; height: 40px; object-fit: cover;">
+                                        {% else %}
+                                        <i class="fas fa-store fa-2x text-muted"></i>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ restaurant.name }}</td>
+                                    <td>{{ restaurant.address or '-' }}</td>
+                                    <td>{{ restaurant.phone or '-' }}</td>
+                                    <td>{{ restaurant.table_count }}</td>
+                                    <td>
+                                        {% if restaurant.is_active %}
+                                        <span class="badge bg-success">Aktiv</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">Deaktiv</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('admin.edit_restaurant', restaurant_id=restaurant.id) }}" class="btn btn-sm btn-outline-primary" title="Düzəliş">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="{{ url_for('admin.tables', restaurant_id=restaurant.id) }}" class="btn btn-sm btn-outline-info" title="Masalar">
+                                            <i class="fas fa-table"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

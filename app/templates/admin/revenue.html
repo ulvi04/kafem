@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}Gəlir hesabatı - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-chart-line text-primary me-2"></i> Gəlir hesabatı</h1>
+        
+        <div class="btn-group shadow-sm" role="group">
+            <a href="{{ url_for('admin.revenue', period='daily') }}" class="btn {% if period == 'daily' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                Günlük
+            </a>
+            <a href="{{ url_for('admin.revenue', period='weekly') }}" class="btn {% if period == 'weekly' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                Həftəlik
+            </a>
+            <a href="{{ url_for('admin.revenue', period='monthly') }}" class="btn {% if period == 'monthly' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                Aylıq
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <div class="card border-start border-success border-4 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-uppercase text-muted mb-2">Ümumi gəlir</h6>
+                            <h3 class="mb-0">{{ "%.2f"|format(total_stats.total_revenue) }} ₼</h3>
+                        </div>
+                        <div class="icon-circle bg-success-light">
+                            <i class="fas fa-money-bill-wave text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card border-start border-info border-4 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-uppercase text-muted mb-2">Ümumi sifarişlər</h6>
+                            <h3 class="mb-0">{{ total_stats.total_orders }}</h3>
+                        </div>
+                        <div class="icon-circle bg-info-light">
+                            <i class="fas fa-shopping-cart text-info"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0"><i class="fas fa-table text-primary me-2"></i> {{ period|title }} gəlir cədvəli</h5>
+        </div>
+        <div class="card-body">
+            {% if revenue_stats %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Tarix</th>
+                            <th class="text-end">Gəlir</th>
+                            <th class="text-end">Sifarişlər</th>
+                            <th class="text-end">Orta sifariş dəyəri</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for stat in revenue_stats %}
+                        <tr>
+                            {% set hour = (stat.date[11:13]|int + 4) %}
+                            {% if hour >= 24 %}
+                                {% set hour = hour - 24 %}
+                            {% endif %}
+                            <td>
+                            {{ stat.date[8:10] }}.{{ stat.date[5:7] }}.{{ stat.date[0:4] }}
+                            {{ '%02d' % hour }}:{{ stat.date[14:16] }}
+                            </td>
+                            <td class="text-end"><strong>{{ "%.2f"|format(stat.revenue) }} ₼</strong></td>
+                            <td class="text-end">{{ stat.order_count }}</td>
+                            <td class="text-end">{{ "%.2f"|format(stat.revenue / stat.order_count) }} ₼</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot class="table-success">
+                        <tr>
+                            <td><strong>TOPLAM</strong></td>
+                            <td class="text-end"><strong>{{ "%.2f"|format(revenue_stats|sum(attribute='revenue')) }} ₼</strong></td>
+                            <td class="text-end"><strong>{{ revenue_stats|sum(attribute='order_count') }}</strong></td>
+                            <td class="text-end"><strong>{{ "%.2f"|format((revenue_stats|sum(attribute='revenue')) / (revenue_stats|sum(attribute='order_count'))) }} ₼</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <div class="empty-state">
+                    <i class="fas fa-chart-line fa-4x text-muted mb-3"></i>
+                    <h3 class="h5">Gəlir məlumatı yoxdur</h3>
+                    <p class="text-muted">Seçilmiş dövr üçün gəlir məlumatı tapılmadı</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .empty-state {
+        max-width: 400px;
+        margin: 0 auto;
+    }
+    
+    .table-hover tbody tr:hover {
+        background-color: rgba(25, 135, 84, 0.05);
+    }
+    
+    tfoot tr {
+        font-weight: 600;
+    }
+</style>
+{% endblock %}

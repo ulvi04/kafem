@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}İstifadəçilər - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-users text-primary me-2"></i> İstifadəçilər</h1>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createUserModal">
+            <i class="fas fa-plus me-1"></i> Yeni İstifadəçi
+        </button>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>İstifadəçi adı</th>
+                            <th>E-poçt</th>
+                            <th>Rol</th>
+                            <th>Restoran</th>
+                            <th>Status</th>
+                            <th>Yaradılma tarixi</th>
+                            <th class="text-end">Əməliyyatlar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>
+                                <span class="badge bg-{% if user.role == 'admin' %}danger{% elif user.role == 'restoran_sahibi' %}primary{% else %}info{% endif %} rounded-pill">
+                                    {% if user.role == 'admin' %}Admin
+                                    {% elif user.role == 'restoran_sahibi' %}Restoran sahibi
+                                    {% else %}Ofisiant
+                                    {% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                {% if user.restaurant %}
+                                {{ user.restaurant.name }}
+                                {% else %}
+                                -
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-{% if user.is_active %}success{% else %}secondary{% endif %} rounded-pill">
+                                    {% if user.is_active %}Aktiv{% else %}Deaktiv{% endif %}
+                                </span>
+                            </td>
+                            <td>{{ user.created_at.strftime('%d.%m.%Y') }}</td>
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-outline-primary" title="Düzəliş">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create User Modal -->
+<div class="modal fade" id="createUserModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-user-plus text-primary me-2"></i> Yeni İstifadəçi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('admin.create_user') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">İstifadəçi adı *</label>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="email" class="form-label">E-poçt *</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Parol *</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="role" class="form-label">Rol *</label>
+                        <select class="form-select" id="role" name="role" required onchange="toggleRestaurantField()">
+                            <option value="">Rol seçin</option>
+                            <option value="admin">Admin</option>
+                            <option value="restoran_sahibi">Restoran sahibi</option>
+                            <option value="ofisiant">Ofisiant</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3" id="restaurant-field" style="display: none;">
+                        <label for="restaurant_id" class="form-label">Restoran</label>
+                        <select class="form-select" id="restaurant_id" name="restaurant_id">
+                            <option value="">Restoran seçin</option>
+                            {% for restaurant in restaurants %}
+                            <option value="{{ restaurant.id }}">{{ restaurant.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Ləğv et</button>
+                    <button type="submit" class="btn btn-primary">Yarat</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function toggleRestaurantField() {
+    const role = document.getElementById('role').value;
+    const restaurantField = document.getElementById('restaurant-field');
+    const restaurantSelect = document.getElementById('restaurant_id');
+    
+    if (role === 'restoran_sahibi' || role === 'ofisiant') {
+        restaurantField.style.display = 'block';
+        if (role === 'restoran_sahibi') {
+            restaurantSelect.required = true;
+        }
+    } else {
+        restaurantField.style.display = 'none';
+        restaurantSelect.required = false;
+    }
+}
+</script>
+{% endblock %}

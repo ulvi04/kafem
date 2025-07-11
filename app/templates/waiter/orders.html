@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Sifarişlər - {{ current_user.username }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="fas fa-clipboard-list"></i> Sifarişlər</h1>
+        
+        <div class="btn-group" role="group">
+            <a href="{{ url_for('waiter.orders', status='all') }}" class="btn btn-{% if current_status == 'all' %}primary{% else %}outline-primary{% endif %}">
+                Hamısı
+            </a>
+            <a href="{{ url_for('waiter.orders', status='pending') }}" class="btn btn-{% if current_status == 'pending' %}warning{% else %}outline-warning{% endif %}">
+                Gözləyir
+            </a>
+            <a href="{{ url_for('waiter.orders', status='preparing') }}" class="btn btn-{% if current_status == 'preparing' %}info{% else %}outline-info{% endif %}">
+                Hazırlanır
+            </a>
+            <a href="{{ url_for('waiter.orders', status='ready') }}" class="btn btn-{% if current_status == 'ready' %}success{% else %}outline-success{% endif %}">
+                Hazırdır
+            </a>
+            <a href="{{ url_for('waiter.orders', status='completed') }}" class="btn btn-{% if current_status == 'completed' %}secondary{% else %}outline-secondary{% endif %}">
+                Tamamlandı
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    {% if orders %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Sifariş №</th>
+                                    <th>Masa</th>
+                                    <th>Məbləğ</th>
+                                    <th>Status</th>
+                                    <th>Tarix</th>
+                                    <th>Əməliyyatlar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in orders %}
+                                <tr>
+                                    <td>#{{ order.id }}</td>
+                                    <td>{{ order.table.number }}</td>
+                                    <td>{{ "%.2f"|format(order.total_amount) }} ₼</td>
+                                    <td>
+                                        <span class="badge bg-{% if order.status == 'pending' %}warning{% elif order.status == 'preparing' %}info{% elif order.status == 'ready' %}primary{% else %}success{% endif %}">
+                                            {% if order.status == 'pending' %}Gözləyir
+                                            {% elif order.status == 'preparing' %}Hazırlanır
+                                            {% elif order.status == 'ready' %}Hazırdır
+                                            {% else %}Tamamlandı
+                                            {% endif %}
+                                        </span>
+                                    </td>
+                                    <td>{{ order.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                                    <td>
+                                        <a href="{{ url_for('waiter.order_detail', order_id=order.id) }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i> Bax
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-clipboard-list fa-5x text-muted mb-3"></i>
+                        <h3>Sifariş tapılmadı</h3>
+                        <p class="text-muted">Seçilmiş kriterilərlə sifariş yoxdur</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

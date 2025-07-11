@@ -1,0 +1,120 @@
+sequenceDiagram
+    participant C as Customer
+    participant QR as QRCodeService
+    participant T as TableController
+    participant A as AuthService
+    participant O as OrderController
+    participant M as MenuItem
+    participant S as SecurityLog
+    participant DB as Database
+
+    Note over C,DB: 1. QR Code Generation and Table Setup
+    QR->>T: generate_qr_code(table_id)
+    T->>DB: get_table(table_id)
+    DB-->>T: return table_data
+    T->>A: generate_table_token(table_id)
+    A-->>T: return encrypted_token
+    T->>DB: update_table_token(table_id, token)
+    T-->>QR: return qr_url
+    QR-->>C: display QR code
+
+    Note over C,DB: 2. Customer Scans QR and Accesses Menu
+    C->>T: GET /giris/masa-<id>
+    T->>A: validate_table_token(table_id, token)
+    A->>DB: verify_token(table_id, token)
+    DB-->>A: return validation_result
+    
+    alt Token Valid
+        A-->>T: return True
+        T->>M: get_menu(restaurant_id)
+        M->>DB: fetch_menu_items(restaurant_id)
+        DB-->>M: return menu_items
+        M-->>T: return formatted_menu
+        T-->>C: redirect to /masa/<id> with menu
+    else Token Invalid
+        A-->>T: return False
+        T->>S: log_token_attempt(table_id, False)
+        S->>DB: insert_security_log(event_details)
+        T-->>C: return 403 Forbidden
+    end
+
+    Note over C,DB: 3. Customer Places Order
+    C->>O: POST /api/order (order_data, token)
+    O->>A: validate_table_token(table_id, token)
+    A-->>O: return validation_result
+    
+    alt Token Valid
+        O->>O: create_order(table_id, order_data)
+        O->>DB: insert_order(order_details)
+        DB-->>O: return order_id
+        
+        loop For each order item
+            O->>M: get_menu_item(item_id)
+            M->>DB: fetch_menu_item(item_id)
+            DB-->>M: return item_details
+            M-->>O: return item_data
+            O->>DB: insert_order_item(order_id, item_details)
+        end
+        
+        O->>O: calculate_total()
+        O->>DB: update_order_total(order_id, total)
+        O->>S: log_order_attempt(table_id, True)
+        S->>DB: insert_security_log(success_event)
+        O-->>C: return order_confirmation
+    else Token Invalid
+        O->>S: log_order_attempt(table_id, False)
+        S->>DB: insert_security_log(failed_event)
+        O-->>C: return 403 Forbidden
+    end
+
+    Note over C,DB: 4. Staff Order Management
+    participant Staff as Staff
+    Staff->>O: GET /admin/orders
+    O->>A: authenticate_user(credentials)
+    A->>DB: verify_user_credentials()
+    DB-->>A: return user_data
+    A-->>O: return authenticated_user
+    
+    O->>A: check_permission(user, "view_orders", restaurant_id)
+    A-->>O: return permission_result
+    
+    alt Has Permission
+        O->>DB: fetch_restaurant_orders(restaurant_id)
+        DB-->>O: return orders_list
+        O-->>Staff: return formatted_orders
+        
+        Staff->>O: POST /admin/order/<id>/complete
+        O->>A: check_permission(user, "complete_order", order_id)
+        A-->>O: return permission_result
+        
+        alt Can Complete Order
+            O->>DB: update_order_status(order_id, "completed")
+            O->>DB: set_completion_time(order_id, current_time)
+            DB-->>O: return success
+            O-->>Staff: return success_message
+        else No Permission
+            O-->>Staff: return 403 Forbidden
+        end
+    else No Permission
+        O-->>Staff: return 403 Forbidden
+    end
+
+    Note over C,DB: 5. Revenue Tracking
+    participant RS as RevenueService
+    participant Admin as Admin
+    
+    Admin->>RS: GET /admin/revenue
+    RS->>A: authenticate_user(admin_credentials)
+    A-->>RS: return admin_user
+    
+    RS->>A: check_permission(admin_user, "view_revenue", restaurant_id)
+    A-->>RS: return permission_result
+    
+    alt Has Permission
+        RS->>DB: fetch_completed_orders(restaurant_id, date_range)
+        DB-->>RS: return completed_orders
+        RS->>RS: calculate_revenue_by_period(orders)
+        RS-->>Admin: return revenue_report
+    else No Permission
+        RS-->>Admin: return 403 Forbidden
+    end

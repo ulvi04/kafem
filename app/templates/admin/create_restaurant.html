@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Yeni Restoran - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-plus-circle text-primary me-2"></i> Yeni Restoran</h1>
+        <a href="{{ url_for('admin.restaurants') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Geri
+        </a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0"><i class="fas fa-store text-primary me-2"></i> Restoran məlumatları</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="name" name="name" required>
+                                    <label for="name">Restoran adı *</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="phone" name="phone">
+                                    <label for="phone">Telefon</label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <textarea class="form-control" id="address" name="address" style="height: 100px"></textarea>
+                                    <label for="address">Ünvan</label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="number" class="form-control" id="table_count" name="table_count" value="10" min="1" max="100">
+                                    <label for="table_count">Masa sayı</label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="logo" class="form-label">Logo</label>
+                                    <input type="file" class="form-control" id="logo" name="logo" accept="image/*" data-preview="logo-preview">
+                                    <div class="form-text">JPG, PNG formatında, maksimum 2MB</div>
+                                </div>
+                                <div class="image-preview-container">
+                                    <img id="logo-preview" class="img-thumbnail mt-2" style="display: none; max-height: 120px;" alt="Logo önizləməsi">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <a href="{{ url_for('admin.restaurants') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-1"></i> Ləğv et
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Yadda saxla
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+    
+    .card:hover {
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .form-floating label {
+        color: #6c757d;
+    }
+    
+    .image-preview-container {
+        min-height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>
+{% endblock %}

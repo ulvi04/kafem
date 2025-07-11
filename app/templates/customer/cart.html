@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Səbət - {{ restaurant.name }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .cart-header {
+            background: linear-gradient(135deg, #3a7bd5 0%, #00d2ff 100%);
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .cart-item {
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            border: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .cart-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .quantity-control {
+            width: 120px;
+        }
+        .total-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        .empty-cart {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 3rem;
+        }
+        .footer {
+            color: #6c757d;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container pb-5">
+        <!-- Header -->
+        <div class="row cart-header text-white py-4 mb-4">
+            <div class="col-12 text-center">
+                <h2 class="mb-2"><i class="fas fa-shopping-cart me-2"></i> Səbət</h2>
+                <p class="mb-0">{{ restaurant.name }} - Masa {{ table.number }}</p>
+            </div>
+        </div>
+
+        {% if cart_details %}
+        <!-- Cart Items -->
+        <div class="row mb-4">
+            <div class="col-12">
+                {% for detail in cart_details %}
+                <div class="card mb-3 cart-item">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-2">
+                                {% if detail.item.image %}
+                                <img src="{{ url_for('static', filename=detail.item.image) }}" class="img-fluid rounded" alt="{{ detail.item.name }}" style="height: 80px; width: 80px; object-fit: cover;">
+                                {% endif %}
+                            </div>
+                            <div class="col-md-5">
+                                <h5 class="mb-1">{{ detail.item.name }}</h5>
+                                <p class="text-muted small mb-2">{{ detail.item.description }}</p>
+                                <strong class="text-primary">{{ "%.2f"|format(detail.item.price) }} ₼</strong>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <div class="input-group quantity-control mx-auto">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity({{ detail.item.id }}, -1)">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <input type="number" class="form-control text-center" value="{{ detail.quantity }}" id="qty-{{ detail.item.id }}" readonly>
+                                    <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity({{ detail.item.id }}, 1)">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-2 text-end">
+                                <h5 class="mb-0 text-success">{{ "%.2f"|format(detail.subtotal) }} ₼</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Total and Checkout -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card total-card mb-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="mb-0">Ümumi məbləğ:</h4>
+                            <h3 class="mb-0 text-primary">{{ "%.2f"|format(total) }} ₼</h3>
+                        </div>
+                        <div class="d-grid gap-3" style="align-items: center; justify-content: center;" >
+                            <!-- Sifarişi təsdiq et düyməsi -->
+                            <form method="POST" action="{{ url_for('customer.checkout', table_id=table.id) }}">
+                                <button type="submit" class="btn btn-success btn-lg py-3 shadow rounded-pill">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    <strong>Sifarişi təsdiq et</strong>
+                                </button>
+                            </form>
+
+                            <!-- Menyuya qayıt düyməsi -->
+                            <a href="{{ url_for('customer.menu', table_id=table.id) }}"
+                            class="btn btn-outline-primary btn-lg py-3 shadow-sm rounded-pill">
+                                <i class="fas fa-arrow-left me-2"></i>
+                                Menyuya qayıt
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <!-- Empty Cart -->
+        <div class="row">
+            <div class="col-12">
+                <div class="empty-cart text-center">
+                    <i class="fas fa-shopping-cart fa-4x text-muted mb-4"></i>
+                    <h3 class="mb-3">Səbət boşdur</h3>
+                    <p class="text-muted mb-4">Menyu baxaraq məhsul əlavə edin</p>
+                    <a href="{{ url_for('customer.menu', table_id=table.id) }}" class="btn btn-primary px-4 py-2">
+                        <i class="fas fa-utensils me-2"></i> Menyuya bax
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Footer -->
+        <div class="text-center py-3 footer">
+            by novaweb
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function updateQuantity(itemId, change) {
+            const qtyInput = document.getElementById(`qty-${itemId}`);
+            const currentQty = parseInt(qtyInput.value);
+            const newQty = Math.max(0, currentQty + change);
+            
+            const cartUpdate = {};
+            cartUpdate[itemId] = newQty;
+            
+            fetch(`{{ url_for('customer.update_cart', table_id=table.id) }}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(cartUpdate)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>

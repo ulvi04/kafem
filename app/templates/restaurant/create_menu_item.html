@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Yeni məhsul - Menyu{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="fas fa-plus"></i> Yeni məhsul</h1>
+        <a href="{{ url_for('restaurant.menu') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Menyuya qayıt
+        </a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-utensils"></i> Məhsul məlumatları</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Məhsul adı *</label>
+                                    <input type="text" class="form-control" id="name" name="name" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="category" class="form-label">Kateqoriya</label>
+                                    <input type="text" class="form-control" id="category" name="category" placeholder="məs: Əsas yeməklər">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Açıqlama</label>
+                            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="price" class="form-label">Qiymət (₼) *</label>
+                                    <input type="number" class="form-control" id="price" name="price" step="0.01" min="0" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="image" class="form-label">Məhsul şəkli</label>
+                                    <input type="file" class="form-control" id="image" name="image" accept="image/*" data-preview="image-preview">
+                                </div>
+                                <img id="image-preview" class="image-preview mt-2" style="display: none;" alt="Şəkil önizləməsi">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="is_available" name="is_available" checked>
+                                <label class="form-check-label" for="is_available">
+                                    Mövcuddur
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{{ url_for('restaurant.menu') }}" class="btn btn-secondary me-md-2">
+                                <i class="fas fa-times"></i> Ləğv et
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Yadda saxla
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
