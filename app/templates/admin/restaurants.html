@@ -50,12 +50,31 @@
                                         {% endif %}
                                     </td>
                                     <td>
-                                        <a href="{{ url_for('admin.edit_restaurant', restaurant_id=restaurant.id) }}" class="btn btn-sm btn-outline-primary" title="Düzəliş">
+                                        <!-- Edit Button -->
+                                        <a href="{{ url_for('admin.edit_restaurant', restaurant_id=restaurant.id) }}" 
+                                        class="btn btn-sm btn-outline-primary" 
+                                        title="Düzəliş">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <a href="{{ url_for('admin.tables', restaurant_id=restaurant.id) }}" class="btn btn-sm btn-outline-info" title="Masalar">
+                                        
+                                        <!-- Tables Button -->
+                                        <a href="{{ url_for('admin.tables', restaurant_id=restaurant.id) }}" 
+                                        class="btn btn-sm btn-outline-info" 
+                                        title="Masalar">
                                             <i class="fas fa-table"></i>
                                         </a>
+                                        
+                                        <!-- Delete Button -->
+                                        <form action="{{ url_for('admin.delete_restaurant', restaurant_id=restaurant.id) }}" 
+                                            method="POST" 
+                                            class="d-inline"
+                                            onsubmit="return confirm('Restoranı və bütün masalarını silmək istədiyinizə əminsiniz?');">
+                                            <button type="submit" 
+                                                    class="btn btn-sm btn-outline-danger" 
+                                                    title="Sil">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                                 {% endfor %}

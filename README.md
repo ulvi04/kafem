@@ -1,6 +1,6 @@
-# SmartCafe - Restoran Sipariş Sistemi
+# Kafem - Restoran Sipariş Sistemi
 
-SmartCafe, QR kod tabanlı güvenli restoran sipariş sistemidir. Token korumalı masa erişimi, rol tabanlı yönetim, fotoğraflı menü sistemi ve gelir takibi özelliklerine sahiptir.
+Kafem, QR kod tabanlı güvenli restoran sipariş sistemidir. Token korumalı masa erişimi, rol tabanlı yönetim, fotoğraflı menü sistemi ve gelir takibi özelliklerine sahiptir.
 
 ## Özellikler
 
@@ -42,7 +42,7 @@ SmartCafe, QR kod tabanlı güvenli restoran sipariş sistemidir. Token korumal�
 
 1. **Sanal ortam oluşturun:**
 ```bash
-cd /workspace/smartcafe
+cd /workspace/Kafem
 python -m venv venv
 source venv/bin/activate  # Linux/Mac
 ```

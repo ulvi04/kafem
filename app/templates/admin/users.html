@@ -53,9 +53,20 @@
                             </td>
                             <td>{{ user.created_at.strftime('%d.%m.%Y') }}</td>
                             <td class="text-end">
+                                <!-- Edit Button -->
                                 <button class="btn btn-sm btn-outline-primary" title="Düzəliş">
                                     <i class="fas fa-edit"></i>
                                 </button>
+                                
+                                <!-- Delete Button with confirmation -->
+                                <form action="{{ url_for('admin.delete_user', user_id=user.id) }}" method="POST" style="display: inline;">
+                                    <button type="submit" 
+                                            class="btn btn-sm btn-outline-danger" 
+                                            title="Sil"
+                                            onclick="return confirm('İstifadəçini silmək istədiyinizə əminsiniz? Bu əməliyyat geri alına bilməz.');">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                         {% endfor %}

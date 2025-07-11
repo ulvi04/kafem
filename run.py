@@ -17,7 +17,7 @@ def init_db():
     if not admin:
         admin = User(
             username='admin',
-            email='admin@smartcafe.az',
+            email='admin@Kafem.az',
             role='admin'
         )
         admin.set_password('admin123')
@@ -39,7 +39,7 @@ def init_db():
         # Create restaurant owner
         owner = User(
             username='restoran1',
-            email='restoran1@smartcafe.az',
+            email='restoran1@Kafem.az',
             role='restoran_sahibi',
             restaurant_id=restaurant.id
         )
@@ -49,7 +49,7 @@ def init_db():
         # Create waiter
         waiter = User(
             username='ofisiant1',
-            email='ofisiant1@smartcafe.az',
+            email='ofisiant1@Kafem.az',
             role='ofisiant',
             restaurant_id=restaurant.id
         )

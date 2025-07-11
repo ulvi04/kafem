@@ -1,4 +1,4 @@
-// SmartCafe Main JavaScript
+// Kafem Main JavaScript
 
 // Toast notification function
 function showToast(message, type = 'info', duration = 3000) {

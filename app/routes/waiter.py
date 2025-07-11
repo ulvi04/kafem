@@ -24,10 +24,24 @@ def dashboard():
         status='preparing'
     ).order_by(Order.created_at.asc()).all()
     
+    # Get completed orders (limit to 5 for display)
+    completed_orders = Order.query.filter_by(
+        restaurant_id=current_user.restaurant_id,
+        status='completed'
+    ).order_by(Order.created_at.desc()).limit(5).all()
+    
+    # Get total completed count
+    completed_count = Order.query.filter_by(
+        restaurant_id=current_user.restaurant_id,
+        status='completed'
+    ).count()
+    
     return render_template('waiter/dashboard.html', 
                          restaurant=restaurant,
                          pending_orders=pending_orders,
-                         preparing_orders=preparing_orders)
+                         preparing_orders=preparing_orders,
+                         completed_orders=completed_orders,
+                         completed_count=completed_count)
 
 @waiter_bp.route('/orders')
 @login_required
@@ -92,9 +106,15 @@ def api_orders_status():
         status='preparing'
     ).count()
     
+    completed_count = Order.query.filter_by(
+        restaurant_id=current_user.restaurant_id,
+        status='completed'
+    ).count()
+    
     return jsonify({
         'pending': pending_count,
-        'preparing': preparing_count
+        'preparing': preparing_count,
+        'completed': completed_count
     })
 
 # Block access to revenue-related endpoints for waiters

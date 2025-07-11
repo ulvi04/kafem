@@ -30,7 +30,7 @@ if __name__ == '__main__':
         if not admin:
             admin = User(
                 username='admin',
-                email='admin@smartcafe.az',
+                email='admin@Kafem.az',
                 role='admin'
             )
             admin.set_password('admin123')
@@ -52,7 +52,7 @@ if __name__ == '__main__':
             # Create restaurant owner
             owner = User(
                 username='restoran1',
-                email='restoran1@smartcafe.az',
+                email='restoran1@Kafem.az',
                 role='restoran_sahibi',
                 restaurant_id=restaurant.id
             )
@@ -62,7 +62,7 @@ if __name__ == '__main__':
             # Create waiter
             waiter = User(
                 username='ofisiant1',
-                email='ofisiant1@smartcafe.az',
+                email='ofisiant1@Kafem.az',
                 role='ofisiant',
                 restaurant_id=restaurant.id
             )
@@ -128,7 +128,7 @@ if __name__ == '__main__':
                 print("Created sample menu items")
         
         print("\n" + "="*50)
-        print("SmartCafe Application Started Successfully!")
+        print("Kafem Application Started Successfully!")
         print("="*50)
         print("Login credentials:")
         print("Admin: admin/admin123")

@@ -36,7 +36,7 @@
 | Toast POS          | Robust POS and management features        | Expensive for small businesses        |
 | Square for Restaurants | Easy to use and affordable            | Limited advanced features             |
 | GloriaFood         | Free and user-friendly                   | Lacks advanced analytics              |
-| SmartCafe (Target) | Secure, role-based, photo menu, QR-based  | Requires initial setup and training   |
+| Kafem (Target) | Secure, role-based, photo menu, QR-based  | Requires initial setup and training   |
 
 ```mermaid
 quadrantChart
@@ -51,7 +51,7 @@ quadrantChart
     "Toast POS": [0.9, 0.9]
     "Square for Restaurants": [0.6, 0.5]
     "GloriaFood": [0.4, 0.3]
-    "SmartCafe (Target)": [0.7, 0.4]
+    "Kafem (Target)": [0.7, 0.4]
 ```
 
 ## Technical Specifications

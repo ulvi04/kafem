@@ -1,8 +1,8 @@
-# SmartCafe System Design
+# Kafem System Design
 
 ## Implementation approach
 
-SmartCafe sistemi Flask web framework'ü kullanarak geliştirilecek profesyonel bir restoran sipariş yönetim sistemidir. Sistem aşağıdaki temel zorlukları çözecek şekilde tasarlanmıştır:
+Kafem sistemi Flask web framework'ü kullanarak geliştirilecek profesyonel bir restoran sipariş yönetim sistemidir. Sistem aşağıdaki temel zorlukları çözecek şekilde tasarlanmıştır:
 
 ### Teknik Zorluklar ve Çözümler:
 

@@ -94,6 +94,27 @@ def edit_restaurant(restaurant_id):
     
     return render_template('admin/edit_restaurant.html', restaurant=restaurant)
 
+@admin_bp.route('/restaurants/<int:restaurant_id>/delete', methods=['POST'])
+@login_required
+@role_required('admin')
+def delete_restaurant(restaurant_id):
+    restaurant = Restaurant.query.get_or_404(restaurant_id)
+    
+    try:
+        # First delete all tables associated with the restaurant
+        Table.query.filter_by(restaurant_id=restaurant_id).delete()
+        
+        # Then delete the restaurant itself
+        db.session.delete(restaurant)
+        db.session.commit()
+        
+        flash('Restoran və ona aid bütün masalar uğurla silindi', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash('Restoran silinərkən xəta baş verdi: ' + str(e), 'error')
+    
+    return redirect(url_for('admin.restaurants'))
+
 @admin_bp.route('/users')
 @login_required
 @role_required('admin')
@@ -118,6 +139,27 @@ def create_user():
         flash('İstifadəçi uğurla yaradıldı', 'success')
     else:
         flash(error, 'error')
+    
+    return redirect(url_for('admin.users'))
+
+@admin_bp.route('/users/<int:user_id>/delete', methods=['POST'])
+@login_required
+@role_required('admin')
+def delete_user(user_id):
+    # Prevent admin from deleting themselves
+    if current_user.id == user_id:
+        flash('Öz hesabınızı silə bilməzsiniz', 'error')
+        return redirect(url_for('admin.users'))
+    
+    user = User.query.get_or_404(user_id)
+    
+    try:
+        db.session.delete(user)
+        db.session.commit()
+        flash('İstifadəçi uğurla silindi', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash('İstifadəçi silinərkən xəta baş verdi', 'error')
     
     return redirect(url_for('admin.users'))
 
